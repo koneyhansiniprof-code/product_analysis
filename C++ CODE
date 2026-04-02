@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
+class Product {
+public:
+    string name;
+    double productionCost;
+    double retailPrice;
+    int unitsSold;
+    int reportedFailures;
+
+    double calculateProfit() {
+        return (retailPrice - productionCost) * unitsSold;
+    }
+
+    double calculateFailureRate() {
+        if (unitsSold == 0) return 0;
+        return (double(reportedFailures) / unitsSold) * 100;
+    }
+};
+
+int main() {
+    vector<Product> inventory;
+    int choice;
+
+    while (true) {
+        cout << "\n--- PRODUCT ANALYSIS DASHBOARD ---" << endl;
+        cout << "1. Add New Product Data\n2. Run Market Analysis Report\n3. Quality Control Alert\n4. Exit\nSelection: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            Product p;
+            cout << "Product Name: "; cin.ignore(); getline(cin, p.name);
+            cout << "Production Cost ($): "; cin >> p.productionCost;
+            cout << "Retail Price ($): "; cin >> p.retailPrice;
+            cout << "Units Sold: "; cin >> p.unitsSold;
+            cout << "Reported Failures: "; cin >> p.reportedFailures;
+            inventory.push_back(p);
+
+        } else if (choice == 2) {
+            cout << "\n" << left << setw(15) << "PRODUCT" << setw(12) << "PROFIT" << "FAILURE %" << endl;
+            cout << "---------------------------------------" << endl;
+            for (auto &p : inventory) {
+                cout << left << setw(15) << p.name 
+                     << "$" << setw(11) << fixed << setprecision(2) << p.calculateProfit() 
+                     << p.calculateFailureRate() << "%" << endl;
+            }
+
+        } else if (choice == 3) {
+            cout << "\n--- CRITICAL QUALITY ALERTS (Rate > 5%) ---" << endl;
+            for (auto &p : inventory) {
+                if (p.calculateFailureRate() > 5.0) {
+                    cout << "[!] RECALL WARNING: " << p.name << " (Rate: " << p.calculateFailureRate() << "%)" << endl;
+                }
+            }
+        } else if (choice == 4) break;
+    }
+    return 0;
+}
